@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menú Digital</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+margin:0;
+background:#f2f2f2;
+}
+
+header{
+background:#111;
+color:white;
+text-align:center;
+padding:18px;
+font-size:22px;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+padding:15px;
+}
+
+.category{
+margin-top:25px;
+font-size:20px;
+font-weight:bold;
+}
+
+.item{
+background:white;
+padding:15px;
+margin-top:10px;
+border-radius:8px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 2px 4px rgba(0,0,0,0.1);
+}
+
+.item button{
+background:#ff6b00;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:5px;
+cursor:pointer;
+}
+
+.cart{
+background:white;
+padding:15px;
+margin-top:30px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.cart h3{
+margin-top:0;
+}
+
+.cart-item{
+display:flex;
+justify-content:space-between;
+margin-bottom:8px;
+}
+
+.qty{
+display:flex;
+gap:5px;
+}
+
+.qty button{
+background:#ddd;
+border:none;
+padding:3px 8px;
+cursor:pointer;
+}
+
+.order-btn{
+background:#25D366;
+color:white;
+border:none;
+padding:14px;
+width:100%;
+font-size:18px;
+margin-top:15px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.total{
+font-weight:bold;
+margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>Restaurante Demo</header>
+
+<div class="container">
+
+<div class="category">Tacos</div>
+
+<div class="item">
+Taco Pastor - $15
+<button onclick="addItem('Taco Pastor',15)">Agregar</button>
+</div>
+
+<div class="item">
+Taco Bistec - $18
+<button onclick="addItem('Taco Bistec',18)">Agregar</button>
+</div>
+
+<div class="category">Bebidas</div>
+
+<div class="item">
+Agua de Horchata - $20
+<button onclick="addItem('Horchata',20)">Agregar</button>
+</div>
+
+<div class="item">
+Refresco - $22
+<button onclick="addItem('Refresco',22)">Agregar</button>
+</div>
+
+<div class="cart">
+
+<h3>Tu pedido</h3>
+
+<div id="cartItems"></div>
+
+<div class="total" id="total"></div>
+
+<button class="order-btn" onclick="sendOrder()">
+Enviar pedido por WhatsApp
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+let cart = {};
+
+function addItem(name,price){
+
+if(!cart[name]){
+cart[name]={qty:1,price:price}
+}else{
+cart[name].qty++
+}
+
+renderCart()
+
+}
+
+function changeQty(name,delta){
+
+cart[name].qty += delta
+
+if(cart[name].qty <=0){
+delete cart[name]
+}
+
+renderCart()
+
+}
+
+function renderCart(){
+
+let container=document.getElementById("cartItems")
+container.innerHTML=""
+
+let total=0
+
+for(let item in cart){
+
+let row=document.createElement("div")
+row.className="cart-item"
+
+let subtotal=cart[item].qty*cart[item].price
+total+=subtotal
+
+row.innerHTML=`
+
+<span>${item}</span>
+
+<div class="qty">
+
+<button onclick="changeQty('${item}',-1)">-</button>
+
+${cart[item].qty}
+
+<button onclick="changeQty('${item}',1)">+</button>
+
+</div>
+
+`
+
+container.appendChild(row)
+
+}
+
+document.getElementById("total").innerText="Total: $"+total
+
+}
+
+function sendOrder(){
+
+let phone="5210000000000"
+
+let message="Hola, quiero pedir:%0A%0A"
+
+let total=0
+
+for(let item in cart){
+
+let subtotal=cart[item].qty*cart[item].price
+
+message+=`${cart[item].qty} x ${item}%0A`
+
+total+=subtotal
+
+}
+
+message+=`%0ATotal: $${total}`
+
+let url=`https://wa.me/${phone}?text=${message}`
+
+window.open(url)
+
+}
+
+</script>
+
+</body>
+</html>
